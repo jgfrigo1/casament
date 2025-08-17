@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joc dels Reptes de Casament</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(45deg, #667eea, #764ba2, #ff6b9d, #ff8e8e);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: floatUp 15s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg) scale(1); opacity: 0; }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-page {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(20px);
+            padding: 60px 40px;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            animation: welcomeFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes welcomeFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(0.5deg); }
+        }
+
+        .welcome-page::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 182, 193, 0.2), rgba(102, 126, 234, 0.2), transparent);
+            animation: rotateGlow 15s linear infinite;
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 2rem;
+            animation: heartBeat 3s ease-in-out infinite;
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.2) rotate(5deg); }
+            50% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(1.3) rotate(3deg); }
+        }
+
+        .heart:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; color: #ff6b9d; }
+        .heart:nth-child(2) { top: 25%; right: 15%; animation-delay: 1s; color: #ff8e8e; }
+        .heart:nth-child(3) { bottom: 35%; left: 20%; animation-delay: 2s; color: #667eea; }
+        .heart:nth-child(4) { bottom: 15%; right: 25%; animation-delay: 1.5s; color: #764ba2; }
+        .heart:nth-child(5) { top: 40%; left: 50%; animation-delay: 0.5s; color: #ff6b9d; }
+
+        .main-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            animation: titlePulse 4s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .welcome-text {
+            font-size: 1.4rem;
+            line-height: 1.9;
+            margin-bottom: 50px;
+            color: #555;
+            max-width: 700px;
+            text-align: center;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b9d, #ff8e8e, #667eea);
+            background-size: 200% 200%;
+            animation: gradientMove 3s ease infinite;
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 35px rgba(255, 107, 157, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 45px rgba(255, 107, 157, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .main-page {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 50px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 3rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes titleShimmer {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(45deg); }
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 12px;
+            border-radius: 20px;
+            margin-bottom: 50px;
+            overflow: hidden;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #ff6b9d, #ff8e8e, #667eea);
+            background-size: 200% 200%;
+            animation: progressGlow 2s ease infinite;
+            height: 100%;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+            position: relative;
+        }
+
+        @keyframes progressGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .test-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-left: 8px solid #ff6b9d;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.4;
+            pointer-events: none;
+            transform: translateX(-20px) scale(0.95);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-card .test-description {
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .test-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 107, 157, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .test-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .test-card.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(0) scale(1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            animation: cardPulse 2s ease-in-out infinite;
+        }
+
+        .test-card.active .test-description {
+            opacity: 1;
+        }
+
+        @keyframes cardPulse {
+            0%, 100% { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15); }
+            50% { box-shadow: 0 25px 60px rgba(255, 107, 157, 0.2); }
+        }
+
+        .test-card.completed {
+            border-left-color: #4caf50;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            animation: completedGlow 1s ease-in-out;
+        }
+
+        .test-card.completed .test-description {
+            opacity: 1;
+        }
+
+        @keyframes completedGlow {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .test-card.failed {
+            border-left-color: #f44336;
+            background: linear-gradient(135deg, #ffeaea 0%, #fff0f0 100%);
+            animation: failedShake 0.5s ease-in-out;
+        }
+
+        .test-card.failed .test-description {
+            opacity: 1;
+        }
+
+        @keyframes failedShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .test-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .test-status {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            animation: statusBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes statusBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .status-locked { background: #e0e0e0; color: #666; }
+        .status-active { background: #ff6b9d; color: white; box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4); }
+        .status-completed { background: #4caf50; color: white; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4); }
+        .status-failed { background: #f44336; color: white; box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4); }
+
+        .test-description {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 3px dashed #ddd;
+            font-style: italic;
+            color: #666;
+            line-height: 1.7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-description::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            animation: descriptionShimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes descriptionShimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-small {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            animation: startButtonPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes startButtonPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .btn-complete {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            display: none;
+            animation: completeButtonGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes completeButtonGlow {
+            0%, 100% { box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3); }
+            50% { box-shadow: 0 12px 35px rgba(76, 175, 80, 0.5); }
+        }
+
+        .timer {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6b9d;
+            display: none;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
+            animation: timerTick 1s ease-in-out infinite;
+            border: 3px solid #ff6b9d;
+        }
+
+        @keyframes timerTick {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .timer.warning {
+            color: #f44336;
+            border-color: #f44336;
+            animation: timerWarning 0.5s ease-in-out infinite;
+        }
+
+        @keyframes timerWarning {
+            0%, 100% { transform: scale(1); background: white; }
+            50% { transform: scale(1.1); background: #ffebee; }
+        }
+
+        .penalty {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border: 3px solid #f44336;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #c62828;
+            font-weight: bold;
+            display: none;
+            animation: penaltySlideIn 0.5s ease-out;
+            box-shadow: 0 10px 30px rgba(244, 67, 54, 0.2);
+        }
+
+        @keyframes penaltySlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .final-message {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border-radius: 20px;
+            margin-top: 40px;
+            animation: finalMessageAppear 1s ease-out;
+            box-shadow: 0 20px 50px rgba(76, 175, 80, 0.2);
+        }
+
+        @keyframes finalMessageAppear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: #ff6b9d;
+            animation: confetti-fall 4s linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg) scale(0); opacity: 1; }
+            10% { transform: translateY(-80vh) rotate(36deg) scale(1); }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg) scale(0); opacity: 0; }
+        }
+
+        .firework {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: firework 2s ease-out infinite;
+            z-index: 1000;
+        }
+
+        @keyframes firework {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .title { font-size: 2.8rem; }
+            .welcome-text { font-size: 1.2rem; }
+            .test-controls { flex-direction: column; align-items: stretch; }
+            .btn, .btn-small { width: 100%; margin-bottom: 10px; }
+            .main-title { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles"></div>
+
+    <div class="container">
+        <!-- Welcome Page -->
+        <div class="welcome-page" id="welcomePage">
+            <div class="hearts">
+                <div class="heart">💕</div>
+                <div class="heart">💖</div>
+                <div class="heart">💝</div>
+                <div class="heart">💗</div>
+                <div class="heart">💜</div>
+            </div>
+            <div class="main-content">
+                <h1 class="title">Reptes de Casament</h1>
+                <p class="welcome-text">
+                    Benvinguts a la vostra aventura especial! Esteu a punt de començar un viatge de 6 reptes emocionants dissenyats especialment per vosaltres dos. Cada prova desbloquejará la següent, creant records pel camí. Esteu preparats per començar aquesta experiència màgica junts?
+                </p>
+                <button class="btn" onclick="startGame()">Començar l'Aventura</button>
+            </div>
+        </div>
+
+        <!-- Main Game Page -->
+        <div class="main-page" id="mainPage">
+            <h2 class="main-title">Els Vostres Reptes de Casament</h2>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="testsContainer">
+                <!-- Tests will be generated here -->
+            </div>
+
+            <div class="final-message" id="finalMessage">
+                <h2 style="color: #4caf50; margin-bottom: 25px; font-size: 2.5rem;">Felicitats! 🎉</h2>
+                <p style="font-size: 1.4rem; line-height: 1.6;">Heu completat tots els reptes! El vostre amor i treball en equip han brillat. Això és només l'inici del vostre bell viatge junts. ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            currentTest: 0,
+            completedTests: 0,
+            tests: [
+                { description: "Aquí anirà la descripció del repte 1. Substituïu aquest text amb el vostre repte personalitzat.", completed: false, failed: false },
+                { description: "Aquí anirà la descripció del repte 2. Substituïu aquest text amb el vostre repte personalitzat.", completed: false, failed: false },
+                { description: "Aquí anirà la descripció del repte 3. Substituïu aquest text amb el vostre repte personalitzat.", completed: false, failed: false },
+                { description: "Aquí anirà la descripció del repte 4. Substituïu aquest text amb el vostre repte personalitzat.", completed: false, failed: false },
+                { description: "Aquí anirà la descripció del repte 5. Substituïu aquest text amb el vostre repte personalitzat.", completed: false, failed: false },
+                { description: "Aquí anirà la descripció del repte 6. Substituïu aquest text amb el vostre repte personalitzat.", completed: false, failed: false }
+            ],
+            timers: {}
+        };
+
+        // Create floating particles
+        function createFloatingParticles() {
+            const particlesContainer = document.querySelector('.floating-particles');
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function startGame() {
+            document.getElementById('welcomePage').style.animation = 'slideOut 0.8s ease-in forwards';
+            setTimeout(() => {
+                document.getElementById('welcomePage').style.display = 'none';
+                document.getElementById('mainPage').style.display = 'block';
+                initializeTests();
+            }, 800);
+        }
+
+        function initializeTests() {
+            const container = document.getElementById('testsContainer');
+            container.innerHTML = '';
+
+            gameState.tests.forEach((test, index) => {
+                const testCard = createTestCard(test, index);
+                container.appendChild(testCard);
+                
+                // Animate cards appearing
+                setTimeout(() => {
+                    testCard.style.animation = 'slideInFromLeft 0.6s ease-out forwards';
+                }, index * 100);
+            });
+
+            updateGameState();
+        }
+
+        function createTestCard(test, index) {
+            const card = document.createElement('div');
+            card.className = 'test-card';
+            card.id = `test-${index}`;
+            card.style.animationDelay = index * 0.1 + 's';
+
+            card.innerHTML = `
+                <div class="test-header">
+                    <span class="test-number">Repte ${index + 1}</span>
+                    <span class="test-status status-locked" id="status-${index}">Bloquejat</span>
+                </div>
+                <div class="test-description">
+                    <div class="mystery-text">🔒 Aquest repte es desbloquejará quan arribeu aquí...</div>
+                    <div class="actual-text" style="display: none;">${test.description}</div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn btn-small btn-start" onclick="startTest(${index})">Començar Repte</button>
+                    <button class="btn btn-small btn-complete" onclick="completeTest(${index})" id="complete-${index}">Marcar Completat</button>
+                    <div class="timer" id="timer-${index}">05:00</div>
+                </div>
+                <div class="penalty" id="penalty-${index}">
+                    ⚠️ S'ha acabat el temps! Aquest repte no s'ha completat a temps. Encara podeu continuar, però potser hi haurà una petita penalització al vostre regal final!
+                </div>
+            `;
+
+            return card;
+        }
+
+        function updateGameState() {
+            // Update progress bar with animation
+            const progress = (gameState.completedTests / gameState.tests.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+
+            // Update test states with enhanced animations
+            gameState.tests.forEach((test, index) => {
+                const card = document.getElementById(`test-${index}`);
+                const status = document.getElementById(`status-${index}`);
+                const mysteryText = card.querySelector('.mystery-text');
+                const actualText = card.querySelector('.actual-text');
+
+                if (test.completed) {
+                    card.className = 'test-card completed';
+                    status.textContent = 'Completat';
+                    status.className = 'test-status status-completed';
+                    // Show actual text for completed tests
+                    if (mysteryText) mysteryText.style.display = 'none';
+                    if (actualText) actualText.style.display = 'block';
+                    createSuccessEffect(card);
+                } else if (test.failed) {
+                    card.className = 'test-card failed';
+                    status.textContent = 'Fallat';
+                    status.className = 'test-status status-failed';
+                    // Show actual text for failed tests
+                    if (mysteryText) mysteryText.style.display = 'none';
+                    if (actualText) actualText.style.display = 'block';
+                } else if (index === gameState.currentTest) {
+                    card.className = 'test-card active';
+                    status.textContent = 'Actiu';
+                    status.className = 'test-status status-active';
+                    // Show actual text for active test with animation
+                    if (mysteryText && actualText) {
+                        mysteryText.style.animation = 'fadeOut 0.5s ease-out forwards';
+                        setTimeout(() => {
+                            mysteryText.style.display = 'none';
+                            actualText.style.display = 'block';
+                            actualText.style.animation = 'fadeIn 0.5s ease-out';
+                        }, 500);
+                    }
+                } else {
+                    card.className = 'test-card';
+                    status.textContent = 'Bloquejat';
+                    status.className = 'test-status status-locked';
+                    // Show mystery text for locked tests
+                    if (mysteryText) mysteryText.style.display = 'block';
+                    if (actualText) actualText.style.display = 'none';
+                }
+            });
+
+            // Show final message if all tests completed
+            if (gameState.completedTests === gameState.tests.length) {
+                setTimeout(() => {
+                    document.getElementById('finalMessage').style.display = 'block';
+                    createCelebration();
+                }, 500);
+            }
+        }
+
+        function startTest(index) {
+            if (index !== gameState.currentTest) return;
+
+            const timer = document.getElementById(`timer-${index}`);
+            const startBtn = document.querySelector(`#test-${index} .btn-start`);
+            const completeBtn = document.getElementById(`complete-${index}`);
+
+            // Animate button transitions
+            startBtn.style.animation = 'fadeOut 0.3s ease-out forwards';
+            setTimeout(() => {
+                startBtn.style.display = 'none';
+                timer.style.display = 'block';
+                completeBtn.style.display = 'block';
+                timer.style.animation = 'fadeIn 0.3s ease-out';
+                completeBtn.style.animation = 'fadeIn 0.3s ease-out';
+            }, 300);
+
+            // Start countdown with enhanced animation
+            let timeLeft = 300; // 5 minutes in seconds
+            gameState.timers[index] = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 60) {
+                    timer.className = 'timer warning';
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(gameState.timers[index]);
+                    testTimeout(index);
+                }
+
+                timeLeft--;
+            }, 1000);
+        }
+
+        function completeTest(index) {
+            if (gameState.timers[index]) {
+                clearInterval(gameState.timers[index]);
+            }
+
+            gameState.tests[index].completed = true;
+            gameState.completedTests++;
+            gameState.currentTest++;
+
+            updateGameState();
+        }
+
+        function testTimeout(index) {
+            gameState.tests[index].failed = true;
+            gameState.currentTest++;
+            
+            const penalty = document.getElementById(`penalty-${index}`);
+            const completeBtn = document.getElementById(`complete-${index}`);
+            
+            penalty.style.display = 'block';
+            completeBtn.style.display = 'none';
+            
+            // Add shake effect to the card
+            const card = document.getElementById(`test-${index}`);
+            card.style.animation = 'failedShake 0.5s ease-in-out';
+            
+            updateGameState();
+        }
+
+        function createSuccessEffect(card) {
+            // Create success particles around the completed card
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '6px';
+                particle.style.height = '6px';
+                particle.style.background = '#4caf50';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '1000';
+                
+                const rect = card.getBoundingClientRect();
+                particle.style.left = rect.left + Math.random() * rect.width + 'px';
+                particle.style.top = rect.top + Math.random() * rect.height + 'px';
+                
+                document.body.appendChild(particle);
+                
+                // Animate the particle
+                particle.animate([
+                    { transform: 'scale(0) translateY(0)', opacity: 1 },
+                    { transform: 'scale(1) translateY(-50px)', opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                }).onfinish = () => particle.remove();
+            }
+        }
+
+        function createCelebration() {
+            // Create confetti
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = ['#ff6b9d', '#667eea', '#764ba2', '#4caf50', '#ff8e8e'][Math.floor(Math.random() * 5)];
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 50);
+            }
+
+            // Create fireworks
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 50 + 20 + '%';
+                    firework.style.backgroundColor = ['#ff6b9d', '#667eea', '#764ba2', '#4caf50'][Math.floor(Math.random() * 4)];
+                    firework.style.animationDelay = Math.random() * 1 + 's';
+                    document.body.appendChild(firework);
+
+                    setTimeout(() => firework.remove(), 2000);
+                }, i * 200);
+            }
+
+            // Add celebration sound effect simulation
+            navigator.vibrate && navigator.vibrate([200, 100, 200]);
+        }
+
+        // Add CSS animation keyframes dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOut {
+                from { opacity: 1; transform: translateX(0); }
+                to { opacity: 0; transform: translateX(-100%); }
+            }
+            
+            @keyframes slideInFromLeft {
+                from { opacity: 0; transform: translateX(-50px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            
+            @keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.8); }
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.8); }
+                to { opacity: 1; transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize the game
+        window.addEventListener('load', () => {
+            createFloatingParticles();
+            gameState.currentTest = 0;
+            
+            // Add interactive hearts
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach(heart => {
+                heart.addEventListener('mouseenter', () => {
+                    heart.style.transform = 'scale(1.5) rotate(15deg)';
+                    heart.style.transition = 'all 0.3s ease';
+                });
+                
+                heart.addEventListener('mouseleave', () => {
+                    heart.style.transform = 'scale(1) rotate(0deg)';
+                });
+                
+                heart.addEventListener('click', () => {
+                    // Create heart burst effect
+                    for (let i = 0; i < 10; i++) {
+                        const miniHeart = document.createElement('div');
+                        miniHeart.textContent = '💕';
+                        miniHeart.style.position = 'absolute';
+                        miniHeart.style.left = heart.offsetLeft + 'px';
+                        miniHeart.style.top = heart.offsetTop + 'px';
+                        miniHeart.style.pointerEvents = 'none';
+                        miniHeart.style.fontSize = '1rem';
+                        miniHeart.style.zIndex = '1000';
+                        
+                        heart.parentNode.appendChild(miniHeart);
+                        
+                        miniHeart.animate([
+                            { 
+                                transform: 'scale(0) translate(0, 0)', 
+                                opacity: 1 
+                            },
+                            { 
+                                transform: `scale(1) translate(${(Math.random() - 0.5) * 100}px, ${-Math.random() * 100}px)`, 
+                                opacity: 0 
+                            }
+                        ], {
+                            duration: 1000,
+                            easing: 'ease-out'
+                        }).onfinish = () => miniHeart.remove();
+                    }
+                });
+            });
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space' && document.getElementById('welcomePage').style.display !== 'none') {
+                event.preventDefault();
+                startGame();
+            }
+            
+            if (event.code === 'Enter' && gameState.currentTest < gameState.tests.length) {
+                const activeTest = gameState.currentTest;
+                const completeBtn = document.getElementById(`complete-${activeTest}`);
+                if (completeBtn && completeBtn.style.display !== 'none') {
+                    completeTest(activeTest);
+                }
+            }
+        });
+
+        // Add smooth scrolling to active test
+        function scrollToActiveTest() {
+            const activeTest = document.getElementById(`test-${gameState.currentTest}`);
+            if (activeTest) {
+                activeTest.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Override updateGameState to include scrolling
+        const originalUpdateGameState = updateGameState;
+        updateGameState = function() {
+            originalUpdateGameState();
+            setTimeout(scrollToActiveTest, 100);
+        };
+    </script>
+</body>
+</html>
